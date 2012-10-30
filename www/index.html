@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>Ele Standup Gateway</title>
+</head>
+<body>
+
+  <form name="standup" action="/irc" method="post">
+    <fieldset>
+      <legend>Your Information</legend>
+      <label for="irc_nick">IRC Nick</label>
+      <input type="text" name="irc_nick" id="irc_nick" /><br/>
+      <label for="area">Functional Area</label>
+      <input type="text" name="area" id="area" /><br/>
+    </fieldset>
+    <br/>
+    <fieldset>
+      <legend>Standup</legend>
+      <label for="completed">What I Completed</label><br/>
+      <textarea name="completed" id="completed" rows="5" cols="80"></textarea><br/>
+      <label for="inprogress">What I'm Working on Today</label><br/>
+      <textarea name="inprogress" id="inprogress" rows="5" cols="80"/></textarea><br/>
+      <label for="impediments">What Impediments I Have</label><br/>
+      <textarea name="impediments" id="impediments" rows="5" cols="80"/></textarea><br/>
+    </fieldset>
+    <input type="submit" value="Submit">
+  </form>
+</body>
+</html>
