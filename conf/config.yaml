@@ -1,0 +1,34 @@
+config:
+  irc:
+    nick: ele-standup-bot
+    user_name: ele-standup-bot
+    real_name: 'Ele Standup Bot'
+    server: irc.freenode.net
+    port: 7000
+    ssl: true
+    channels:
+      definitions:
+      - { name: '#funfunfun' }
+      - { name: '#funfunfun2', password: 'mypass' }
+      publish:
+      - '#funfunfun'
+      remind:
+      - '#funfunfun'
+      - '#funfunfun2'
+  members:
+    - dcwangmit01
+    - gdusbabek
+    - rphillips
+    - kc5tja
+    - pquerna
+    - dispalt
+    - rch
+    - dcwangmit01
+    - lakspace
+    - arreyder
+    - jburkhart
+    - ifup
+    - JasonF
+    - jirwin
+    - russell_h
+  
