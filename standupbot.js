@@ -12,8 +12,12 @@ var fs = require('fs');
 var yaml = require('js-yaml');
 
 // Load Configuration
-var contents = fs.readFileSync('./conf/custom-config.yaml').toString();
-var config = yaml.load(contents).config;    
+var configFile = "./conf/custom-config.yaml";
+if (process.argv.length > 2) {
+  configFile = process.argv[2];
+}
+var contents = fs.readFileSync(configFile).toString();
+var config = yaml.load(contents).config;
 
 
 // Load Configuration Variables
