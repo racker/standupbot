@@ -11,7 +11,7 @@ Run it via
 
 `$ brew install npm`
 
-`$ GOTO Common`
+GOTO Common
 
 ## Linux Ubuntu 12.04
 
