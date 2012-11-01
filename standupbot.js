@@ -110,11 +110,14 @@ app.post('/irc', function(req, res){
 });
 
 function publishToChannels(message, callback) {
-	for (var i = 0; i < channels_publish.length; i++) {	
-    console.log("publishing to " + channels_publish[i]);
-    irc.say(channels_publish[i], message);
-	}
-  callback();
+  var publish = function publish(channel, callback) {
+    irc.say(channel, message);
+    callback();
+  };
+
+  async.forEach(channels_publish, publish, function(err) {
+    callback();
+  });
 }
 
 function label_and_break_lines(label, msg) {
