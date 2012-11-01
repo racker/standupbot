@@ -46,7 +46,7 @@ var channels_def = [];
 var channels_publish = config.irc.channels.publish;
 var channels_remind  = config.irc.channels.remind;
 var members = config.members;
-var members_dir = config.members_directory;
+var members_dir = config.members_dir;
 
 if (!fs.existsSync(members_dir)) {
   fs.mkdirSync(members_dir);
