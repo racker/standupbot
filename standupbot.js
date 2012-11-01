@@ -48,6 +48,7 @@ if (!fs.existsSync(members_dir)) {
   fs.mkdirSync(members_dir);
   console.log('created members dir at: ' + members_dir);
 }
+var domain = config.domain;
 
 // Connect to IRC
 var irc = new irc.Client(server, nick,
@@ -73,6 +74,8 @@ var app = express();
 
 // Enable web framework to parse HTTP params
 app.use(express.bodyParser());
+// Enable cookie parsing on requests
+app.use(express.cookieParser());
 
 // Serve up the static webpages which include the form
 app.use('/', express['static']('./www'));
@@ -91,6 +94,10 @@ app.post('/irc', function(req, res){
   result += "---------------------------------------\n"
 
   console.log(result);
+
+  res.cookie('irc_nick', req.body.irc_nick, { domain: domain });
+  res.cookie('area', req.body.area, { domain: domain });
+
   res.send("<pre>\n" + result + "\n</pre>");
 
   for (var i = 0; i < channels_publish.length; i++) {
