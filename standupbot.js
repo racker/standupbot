@@ -82,36 +82,38 @@ app.use('/', express['static']('./www'));
 
 // Handle the API request
 app.post('/irc', function(req, res){
-  // build the output
-  var result = "";
-  result += "---------------------------------------\n"
-  result += label_and_break_lines
-      ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
-  result += label_and_break_lines
-      ("[" + req.body.irc_nick + ": " + req.body.area + " inprogress ] ", req.body.inprogress);
-  result += label_and_break_lines
-      ("[" + req.body.irc_nick + ": " + req.body.area + " impediments] ", req.body.impediments);
-  result += "---------------------------------------\n"
+	// build the output
+	var result = "";
+	result += "---------------------------------------\n"
+	result += label_and_break_lines
+	    ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
+	result += label_and_break_lines
+	    ("[" + req.body.irc_nick + ": " + req.body.area + " inprogress ] ", req.body.inprogress);
+	result += label_and_break_lines
+	    ("[" + req.body.irc_nick + ": " + req.body.area + " impediments] ", req.body.impediments);
+	result += "---------------------------------------\n"
 
-  console.log(result);
-
-  res.cookie('irc_nick', req.body.irc_nick, { domain: domain });
-  res.cookie('area', req.body.area, { domain: domain });
-
-  res.send("<pre>\n" + result + "\n</pre>");
-
-  for (var i = 0; i < channels_publish.length; i++) {
-    console.log("publishing to " + channels_publish[i]);
-    irc.say(channels_publish[i], result);
-  }
-
-  fs.writeFile(members_dir + "/" + req.body.irc_nick, '', function(err) {
-    if (err) throw err;
-    checkForMissingStandups(function (err, missing) {
-      irc.say(channels_publish[0], "Missing standup from the following members: " + missing.join(', '));
+	console.log(result);
+	res.send("<pre>\n" + result + "\n</pre>");
+	
+  publishToChannels(result, function () {
+    fs.writeFile(members_dir + "/" + req.body.irc_nick, '', function(err) {
+      checkForMissingStandups(function (err, missing) {
+        publishToChannels("Missing standup from the following members: " + missing.join(', '), function () {
+          console.log("Notified members about missing standups.");
+        });
+      });
     });
   });
 });
+
+function publishToChannels(message, callback) {
+	for (var i = 0; i < channels_publish.length; i++) {	
+    console.log("publishing to " + channels_publish[i]);
+    irc.say(channels_publish[i], message);
+	}
+  callback();
+}
 
 function label_and_break_lines(label, msg) {
   var result = "";
