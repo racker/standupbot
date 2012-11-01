@@ -51,22 +51,22 @@ if (!fs.existsSync(members_dir)) {
 
 // Connect to IRC
 var irc = new irc.Client(server, nick,
-			 {
-			     userName: user_name,
-			     realName: real_name,
-			     debug: true,
-			     showErrors: true,
-			     port: port,
-			     autoRejoin: true,
-			     autoConnect: true,
-			     channels: channels_def,
-			     secure: ssl,
-			     selfSigned: true,
-			     certExpired: true,
-			     floodProtection: true,
-			     floodProtectionDelay: 250,
-			     stripColors: false
-			 });
+       {
+           userName: user_name,
+           realName: real_name,
+           debug: true,
+           showErrors: true,
+           port: port,
+           autoRejoin: true,
+           autoConnect: true,
+           channels: channels_def,
+           secure: ssl,
+           selfSigned: true,
+           certExpired: true,
+           floodProtection: true,
+           floodProtectionDelay: 250,
+           stripColors: false
+       });
 
 // Initiate the web framework
 var app = express();
@@ -79,24 +79,24 @@ app.use('/', express['static']('./www'));
 
 // Handle the API request
 app.post('/irc', function(req, res){
-	// build the output
-	var result = "";
-	result += "---------------------------------------\n"
-	result += label_and_break_lines
-	    ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
-	result += label_and_break_lines
-	    ("[" + req.body.irc_nick + ": " + req.body.area + " inprogress ] ", req.body.inprogress);
-	result += label_and_break_lines
-	    ("[" + req.body.irc_nick + ": " + req.body.area + " impediments] ", req.body.impediments);
-	result += "---------------------------------------\n"
+  // build the output
+  var result = "";
+  result += "---------------------------------------\n"
+  result += label_and_break_lines
+      ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
+  result += label_and_break_lines
+      ("[" + req.body.irc_nick + ": " + req.body.area + " inprogress ] ", req.body.inprogress);
+  result += label_and_break_lines
+      ("[" + req.body.irc_nick + ": " + req.body.area + " impediments] ", req.body.impediments);
+  result += "---------------------------------------\n"
 
-	console.log(result);
-	res.send("<pre>\n" + result + "\n</pre>");
-	
-	for (var i = 0; i < channels_publish.length; i++) {	
+  console.log(result);
+  res.send("<pre>\n" + result + "\n</pre>");
+
+  for (var i = 0; i < channels_publish.length; i++) {
     console.log("publishing to " + channels_publish[i]);
     irc.say(channels_publish[i], result);
-	}
+  }
 
   fs.writeFile(members_dir + "/" + req.body.irc_nick, '', function(err) {
     if (err) throw err;
