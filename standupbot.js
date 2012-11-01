@@ -3,6 +3,7 @@
   npm install js-yaml
   npm install express
   npm install fs
+  npm install async
 */
 
 // Imports
@@ -10,6 +11,7 @@ var express = require('express');
 var irc = require('irc');
 var fs = require('fs');
 var yaml = require('js-yaml');
+var async = require('async');
 
 // Load Configuration
 var configFile = "./conf/custom-config.yaml";
