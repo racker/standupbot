@@ -33,3 +33,15 @@ config:
     - jirwin
     - russell_h
   domain: 'standup.cm.rax.io'
+  # A few default reminder times
+  # All times are set in UTC
+  # early reminder: 10:45am PST monday through friday
+  # due reminder: 11:00am PST monday through friday
+  # late reminder: 2:30pm PST monday through friday
+  # deadline reminder: 6:00pm PST monday through friday
+  timers: {
+    earlyReminder: '0 45 17 * * 1-5',
+    dueReminder: '0 0 18 * * 1-5',
+    lateReminder: '0 30 21 * * 1-5',
+    deadlineReminder: '0 0 1 * * 2-6'
+  }

@@ -54,24 +54,35 @@ if (!fs.existsSync(members_dir)) {
 }
 var domain = config.domain;
 
+// Timers
+var timers = config.timers
+
 // Connect to IRC
 var irc = new irc.Client(server, nick,
-       {
-           userName: user_name,
-           realName: real_name,
-           debug: true,
-           showErrors: true,
-           port: port,
-           autoRejoin: true,
-           autoConnect: true,
-           channels: channels_def,
-           secure: ssl,
-           selfSigned: true,
-           certExpired: true,
-           floodProtection: true,
-           floodProtectionDelay: 250,
-           stripColors: false
-       });
+			 {
+         userName: user_name,
+         realName: real_name,
+         debug: true,
+         showErrors: true,
+         port: port,
+         autoRejoin: true,
+         autoConnect: false,
+         channels: channels_def,
+         secure: ssl,
+         selfSigned: true,
+         certExpired: true,
+         floodProtection: true,
+         floodProtectionDelay: 250,
+         stripColors: false
+			 });
+
+// Connect IRC client and initize timers
+irc.connect(function() {
+  new cron(timers.earlyReminder, announceEarlyReminder, null, true);
+  new cron(timers.dueReminder, announceDueReminder, null, true);
+  new cron(timers.lateReminder, announceLateReminder, null, true);
+  new cron(timers.deadlineReminder, announceDeadlineReminder, null, true);
+});
 
 // Initiate the web framework
 var app = express();
@@ -118,6 +129,17 @@ function publishToChannels(message, callback) {
   });
 }
 
+function remindChannels(message, callback) {
+  var remind = function remind(channel, callback) {
+    irc.notice(channel, message);
+    callback();
+  };
+
+  async.forEach(channels_remind, remind, function(err) {
+    callback();
+  });
+}
+
 function label_and_break_lines(label, msg) {
   var result = "";
   if (msg == null || msg == "") {
@@ -160,6 +182,46 @@ function clearMemberStandups(callback) {
   });
   callback();
 }
+
+function announceEarlyReminder() {
+  checkForMissingStandups(function(err, missing) {
+    var msg = 'Standups are due soon. (' + missing.join(', ') + ')';
+    remindChannels(msg, function() {
+      console.log('Reminded channel that standups are due soon.');
+    });
+  });
+}
+
+function announceDueReminder() {
+  checkForMissingStandups(function(err, missing) {
+    var msg = 'Standups are due! (' + missing.join(', ') + ')';
+    remindChannels(msg, function() {
+      console.log('Reminded channel that standups are due now.');
+    });
+  });
+}
+
+function announceLateReminder() {
+  checkForMissingStandups(function(err, missing) {
+    var msg = 'Standups are late! (' + missing.join(', ') + ')';
+    remindChannels(msg, function() {
+      console.log('Reminded channels that standups are late.');
+    });
+  });
+}
+
+function announceDeadlineReminder() {
+  checkForMissingStandups(function(err, missing) {
+    var msg = 'The deadline for standups is now. You lose the game! (' + missing.join(', ') + ')';
+    remindChannels(msg, function() {
+      console.log('Reminded channels that the deadline for standups has passed.');
+      clearMemberStandups(function() {
+        console.log('Cleared member standups.');
+      });
+    });
+  });
+}
+
 
 // Add listener for error events so the bot doesn't crash when something goes wrong on the server
 irc.addListener('error', function(message) {
