@@ -4,6 +4,7 @@
   npm install express
   npm install fs
   npm install async
+  npm install cron
 */
 
 // Imports
@@ -12,6 +13,7 @@ var irc = require('irc');
 var fs = require('fs');
 var yaml = require('js-yaml');
 var async = require('async');
+var cron = require('cron').CronJob;
 
 // Load Configuration
 var configFile = "./conf/custom-config.yaml";
