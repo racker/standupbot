@@ -42,6 +42,12 @@ var channels_def = [];
 var channels_publish = config.irc.channels.publish;
 var channels_remind  = config.irc.channels.remind;
 var members = config.members;
+var members_dir = config.members_directory;
+
+if (!fs.existsSync(members_dir)) {
+  fs.mkdirSync(members_dir);
+  console.log('created members dir at: ' + members_dir);
+}
 
 // Connect to IRC
 var irc = new irc.Client(server, nick,
@@ -91,6 +97,13 @@ app.post('/irc', function(req, res){
     console.log("publishing to " + channels_publish[i]);
     irc.say(channels_publish[i], result);
 	}
+
+  fs.writeFile(members_dir + "/" + req.body.irc_nick, '', function(err) {
+    if (err) throw err;
+    checkForMissingStandups(function (err, missing) {
+      irc.say(channels_publish[0], "Missing standup from the following members: " + missing.join(', '));
+    });
+  });
 });
 
 function label_and_break_lines(label, msg) {
@@ -111,7 +124,20 @@ function label_and_break_lines(label, msg) {
         }
     }
   }
-  return result
+  return result;
+}
+
+function checkForMissingStandups(callback) {
+  var missing = [];
+  console.log("checking for missing standups");
+  fs.readdir(members_dir, function(err, contents) {
+    for (var i=0; i < members.length; i++) {
+      if (contents.indexOf(members[i]) == -1) {
+        missing.push(members[i]);
+      }
+    }
+    callback(null, missing);
+  });
 }
 
 // Start the server
