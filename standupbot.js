@@ -149,6 +149,15 @@ function checkForMissingStandups(callback) {
   });
 }
 
+function clearMemberStandups(callback) {
+  fs.readdir(members_dir, function(err, contents) {
+    for (var i=0; i < contents.length; i++) {
+      fs.unlink(members_dir + '/' + contents[i]);
+    }
+  });
+  callback();
+}
+
 // Add listener for error events so the bot doesn't crash when something goes wrong on the server
 irc.addListener('error', function(message) {
     console.log('error: ', message);
