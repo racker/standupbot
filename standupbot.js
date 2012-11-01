@@ -102,11 +102,7 @@ app.post('/irc', function(req, res){
 	
   publishToChannels(result, function () {
     fs.writeFile(members_dir + "/" + req.body.irc_nick, '', function(err) {
-      checkForMissingStandups(function (err, missing) {
-        publishToChannels("Missing standup from the following members: " + missing.join(', '), function () {
-          console.log("Notified members about missing standups.");
-        });
-      });
+      console.log("Logged " + req.body.irc_nick + "'s standup.");
     });
   });
 });
