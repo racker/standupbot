@@ -147,6 +147,11 @@ function checkForMissingStandups(callback) {
   });
 }
 
+// Add listener for error events so the bot doesn't crash when something goes wrong on the server
+irc.addListener('error', function(message) {
+    console.log('error: ', message);
+});
+
 // Start the server
 app.listen(8080);
 console.log('Listening on port 8080');
