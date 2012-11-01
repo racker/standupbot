@@ -32,3 +32,4 @@ config:
     - JasonF
     - jirwin
     - russell_h
+  domain: 'standup.cm.rax.io'
