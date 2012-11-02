@@ -112,7 +112,7 @@ app.post('/irc', function(req, res){
 	res.send("<pre>\n" + result + "\n</pre>");
 	
   publishToChannels(result, function () {
-    fs.writeFile(members_dir + "/" + req.body.irc_nick, '', function(err) {
+    fs.writeFile(members_dir + "/" + req.body.irc_nick, result, function(err) {
       console.log("Logged " + req.body.irc_nick + "'s standup.");
     });
   });
