@@ -109,6 +109,8 @@ app.post('/irc', function(req, res){
   result += "---------------------------------------\n"
 
   console.log(result);
+  res.cookie('irc_nick', req.body.irc_nick, { domain: domain });
+  res.cookie('area', req.body.area, { domain: domain });
   res.send("<pre>\n" + result + "\n</pre>");
 
   publishToChannels(result, function () {
