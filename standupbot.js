@@ -59,7 +59,7 @@ var timers = config.timers
 
 // Connect to IRC
 var irc = new irc.Client(server, nick,
-			 {
+       {
          userName: user_name,
          realName: real_name,
          debug: true,
@@ -74,7 +74,7 @@ var irc = new irc.Client(server, nick,
          floodProtection: true,
          floodProtectionDelay: 250,
          stripColors: false
-			 });
+       });
 
 // Connect IRC client and initize timers
 irc.connect(function() {
@@ -97,20 +97,22 @@ app.use('/', express['static']('./www'));
 
 // Handle the API request
 app.post('/irc', function(req, res){
-	// build the output
-	var result = "";
-	result += "---------------------------------------\n"
-	result += label_and_break_lines
-	    ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
-	result += label_and_break_lines
-	    ("[" + req.body.irc_nick + ": " + req.body.area + " inprogress ] ", req.body.inprogress);
-	result += label_and_break_lines
-	    ("[" + req.body.irc_nick + ": " + req.body.area + " impediments] ", req.body.impediments);
-	result += "---------------------------------------\n"
+  // build the output
+  var result = "";
+  result += "---------------------------------------\n"
+  result += label_and_break_lines
+      ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
+  result += label_and_break_lines
+      ("[" + req.body.irc_nick + ": " + req.body.area + " inprogress ] ", req.body.inprogress);
+  result += label_and_break_lines
+      ("[" + req.body.irc_nick + ": " + req.body.area + " impediments] ", req.body.impediments);
+  result += "---------------------------------------\n"
 
-	console.log(result);
-	res.send("<pre>\n" + result + "\n</pre>");
-	
+  console.log(result);
+  res.cookie('irc_nick', req.body.irc_nick, { domain: domain });
+  res.cookie('area', req.body.area, { domain: domain });
+  res.send("<pre>\n" + result + "\n</pre>");
+
   publishToChannels(result, function () {
     fs.writeFile(members_dir + "/" + req.body.irc_nick, result, function(err) {
       console.log("Logged " + req.body.irc_nick + "'s standup.");
