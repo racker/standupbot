@@ -15,6 +15,17 @@ var fs = require('fs');
 var yaml = require('js-yaml');
 var async = require('async');
 var cron = require('cron').CronJob;
+var sqlite = require('sqlite3');
+
+// Open db and make sure stats table exists
+var db = new sqlite.Database('stats.db');
+db.serialize(function() {
+  db.run("CREATE TABLE stats (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, time DATETIME NOT NULL, finished BOOLEAN NOT NULL, inprogress BOOLEAN NOT NULL, impediments BOOLEAN NOT NULL)", function(err) {
+    if (err) {
+      console.log('stats table already exists.');
+    }
+  });
+});
 
 // Load Configuration
 var configFile = "./conf/custom-config.yaml";
@@ -99,7 +110,11 @@ app.use('/', express['static']('./www'));
 // Handle the API request
 app.post('/irc', function(req, res){
   // build the output
-  var result = "";
+  var result = "",
+      finished = req.body.completed ? 1 : 0,
+      inProgress = req.body.inprogress ? 1 : 0,
+      impediments = req.body.impediments ? 1 : 0;
+
   result += "---------------------------------------\n"
   result += label_and_break_lines
       ("[" + req.body.irc_nick + ": " + req.body.area + " completed  ] ", req.body.completed);
@@ -119,6 +134,7 @@ app.post('/irc', function(req, res){
       console.log("Logged " + req.body.irc_nick + "'s standup.");
     });
   });
+  saveRow(req.body.irc_nick, finished, inProgress, impediments); 
 });
 
 function publishToChannels(message, callback) {
@@ -141,6 +157,15 @@ function remindChannels(message, callback) {
   async.forEach(channels_remind, remind, function(err) {
     callback();
   });
+}
+
+function saveRow(name, finished, inProgress, impediments, callback) {
+  var stmt,
+      now = new Date().getTime();
+
+  stmt = db.prepare("INSERT INTO stats VALUES (NULL, ?, ?, ?, ?, ?)");
+  stmt.run(name, now, finished, inProgress, impediments);
+  stmt.finalize();
 }
 
 function label_and_break_lines(label, msg) {
