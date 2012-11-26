@@ -264,6 +264,14 @@ irc.addListener('error', function(message) {
     console.log('error: ', message);
 });
 
+process.on('SIGINT', function() {
+    console.log("\nGracefully shutting down from SIGINT (Ctrl+C)");
+
+    irc.disconnect();
+    db.close();
+    process.exit();
+});
+
 // Start the server
 app.listen(8080);
 console.log('Listening on port 8080');
