@@ -142,6 +142,17 @@ function remindChannels(message, callback) {
   });
 }
 
+function remindMembers(message, missing, callback) {
+  var remind = function remind(member, callback) {
+    irc.say(member, message);
+    callback();
+  };
+
+  async.forEach(missing, remind, function(err) {
+    callback();
+  });;
+}
+
 function label_and_break_lines(label, msg) {
   var result = "";
   if (msg == null || msg == "") {
@@ -187,27 +198,27 @@ function clearMemberStandups(callback) {
 
 function announceEarlyReminder() {
   checkForMissingStandups(function(err, missing) {
-    var msg = 'Standups are due soon. (' + missing.join(', ') + ')';
-    remindChannels(msg, function() {
-      console.log('Reminded channel that standups are due soon.');
+    var msg = 'Standups are due soon.';
+    remindMembers(msg, missing, function() {
+      console.log('Reminded members that standups are due soon.');
     });
   });
 }
 
 function announceDueReminder() {
   checkForMissingStandups(function(err, missing) {
-    var msg = 'Standups are due! (' + missing.join(', ') + ')';
-    remindChannels(msg, function() {
-      console.log('Reminded channel that standups are due now.');
+    var msg = 'Standups are due!';
+    remindMembers(msg, missing, function() {
+      console.log('Reminded members that standups are due now.');
     });
   });
 }
 
 function announceLateReminder() {
   checkForMissingStandups(function(err, missing) {
-    var msg = 'Standups are late! (' + missing.join(', ') + ')';
-    remindChannels(msg, function() {
-      console.log('Reminded channels that standups are late.');
+    var msg = 'Standups are late!';
+    remindMembers(msg, missing, function() {
+      console.log('Reminded members that standups are late.');
     });
   });
 }
@@ -215,11 +226,14 @@ function announceLateReminder() {
 function announceDeadlineReminder() {
   checkForMissingStandups(function(err, missing) {
     var msg = 'The deadline for standups is now. You lose the game! (' + missing.join(', ') + ')';
-    remindChannels(msg, function() {
-      console.log('Reminded channels that the deadline for standups has passed.');
-      clearMemberStandups(function() {
-        console.log('Cleared member standups.');
+
+    if (missing.length > 0) {
+      remindChannels(msg, function() {
+        console.log('Reminded channels that the deadline for standups has passed.');
       });
+    }
+    clearMemberStandups(function() {
+      console.log('Cleared member standups.');
     });
   });
 }
