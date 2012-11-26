@@ -5,6 +5,7 @@
   npm install fs
   npm install async
   npm install cron
+  npm install sqlite3
 */
 
 // Imports
