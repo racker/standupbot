@@ -78,9 +78,15 @@ var irc = new irc.Client(server, nick,
 
 // Connect IRC client and initize timers
 irc.connect(function() {
-  new cron(timers.earlyReminder, announceEarlyReminder, null, true);
-  new cron(timers.dueReminder, announceDueReminder, null, true);
-  new cron(timers.lateReminder, announceLateReminder, null, true);
+  new cron(timers.earlyReminder, function() {
+    announceReminder('due soon!')
+  }, null, true);
+  new cron(timers.dueReminder, function() {
+    announceReminder('due!')
+  }, null, true);
+  new cron(timers.lateReminder, function() {
+    announceReminder('late!')
+  }, null, true);
   new cron(timers.deadlineReminder, announceDeadlineReminder, null, true);
 });
 
@@ -96,7 +102,7 @@ app.use(express.cookieParser());
 app.use('/', express['static']('./www'));
 
 // Handle the API request
-app.post('/irc', function(req, res){
+app.post('/irc', function(req, res) {
   // build the output
   var result = "";
   result += "---------------------------------------\n"
@@ -121,36 +127,30 @@ app.post('/irc', function(req, res){
 });
 
 function publishToChannels(message, callback) {
-  var publish = function publish(channel, callback) {
+  var publish = function(channel, callback) {
     irc.say(channel, message);
     callback();
   };
 
-  async.forEach(channels_publish, publish, function(err) {
-    callback();
-  });
+  async.forEach(channels_publish, publish, callback);
 }
 
 function remindChannels(message, callback) {
-  var remind = function remind(channel, callback) {
+  var remind = function(channel, callback) {
     irc.notice(channel, message);
     callback();
   };
 
-  async.forEach(channels_remind, remind, function(err) {
-    callback();
-  });
+  async.forEach(channels_remind, remind, callback);
 }
 
 function remindMembers(message, missing, callback) {
-  var remind = function remind(member, callback) {
+  var remind = function(member, callback) {
     irc.say(member, message);
     callback();
   };
 
-  async.forEach(missing, remind, function(err) {
-    callback();
-  });;
+  async.forEach(missing, remind, callback);
 }
 
 function label_and_break_lines(label, msg) {
@@ -196,29 +196,10 @@ function clearMemberStandups(callback) {
   callback();
 }
 
-function announceEarlyReminder() {
+function announceReminder(msg) {
   checkForMissingStandups(function(err, missing) {
-    var msg = 'Standups are due soon.';
-    remindMembers(msg, missing, function() {
-      console.log('Reminded members that standups are due soon.');
-    });
-  });
-}
-
-function announceDueReminder() {
-  checkForMissingStandups(function(err, missing) {
-    var msg = 'Standups are due!';
-    remindMembers(msg, missing, function() {
-      console.log('Reminded members that standups are due now.');
-    });
-  });
-}
-
-function announceLateReminder() {
-  checkForMissingStandups(function(err, missing) {
-    var msg = 'Standups are late!';
-    remindMembers(msg, missing, function() {
-      console.log('Reminded members that standups are late.');
+    remindMembers('Standups are ' + msg, missing, function() {
+      console.log('Reminded members that stand ups are ' + msg);
     });
   });
 }
@@ -241,7 +222,7 @@ function announceDeadlineReminder() {
 
 // Add listener for error events so the bot doesn't crash when something goes wrong on the server
 irc.addListener('error', function(message) {
-    console.log('error: ', message);
+  console.log('error: ', message);
 });
 
 // Start the server
