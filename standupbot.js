@@ -173,7 +173,7 @@ function saveRow(name, finished, inProgress, impediments, callback) {
 
   stmt = db.prepare("INSERT INTO stats VALUES (NULL, ?, ?, ?, ?, ?)");
   stmt.run(name, now, finished, inProgress, impediments);
-  stmt.finalize();
+  stmt.finalize(callback);
 }
 
 function label_and_break_lines(label, msg) {
@@ -261,15 +261,15 @@ function announceDeadlineReminder() {
 
 // Add listener for error events so the bot doesn't crash when something goes wrong on the server
 irc.addListener('error', function(message) {
-    console.log('error: ', message);
+  console.log('error: ', message);
 });
 
 process.on('SIGINT', function() {
-    console.log("\nGracefully shutting down from SIGINT (Ctrl+C)");
+  console.log("\nGracefully shutting down from SIGINT (Ctrl+C)");
 
-    irc.disconnect();
-    db.close();
-    process.exit();
+  irc.disconnect();
+  db.close();
+  process.exit();
 });
 
 // Start the server
