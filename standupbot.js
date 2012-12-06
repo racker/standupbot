@@ -55,9 +55,14 @@ app.use(express.bodyParser());
 // Enable cookie parsing on requests
 app.use(express.cookieParser());
 
-// Serve up the static webpages which include the form
+// Serve up the root which includes the form
 app.get('/', function(req, res) {
-  res.render('layout.jade', {});
+  res.render('layout.jade', { cookies: req.cookies });
+});
+
+app.get('/standups', function(req, res) {
+  var historical = getHistoricalData();
+  res.render('historical.jade', historical);
 });
 
 // Handle the API request
@@ -87,7 +92,7 @@ app.post('/irc', function(req, res){
       console.log("Logged " + req.body.irc_nick + "'s standup.");
     });
   });
-  saveRow(req.body.irc_nick, finished, inProgress, impediments); 
+  saveRow(req.body.irc_nick, finished, inProgress, impediments);
 });
 
 function saveRow(name, finished, inProgress, impediments, callback) {

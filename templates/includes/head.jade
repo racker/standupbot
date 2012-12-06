@@ -1,26 +1,3 @@
 head
   include bootstrap
   |  <title>Ele Standup Gateway</title>
-  |  <script type="application/javascript">
-  |    function getCookie(key) {
-  |      var i, x, y, cookies = document.cookie.split(';');
-  |      for (i=0; i < cookies.length; i++) {
-  |        iterKey = cookies[i].substr(0, cookies[i].indexOf("="));
-  |        iterVal = cookies[i].substr(cookies[i].indexOf("=") + 1);
-  |        iterKey = iterKey.replace(/^\s+|\s+$/g, "");
-  |        if (iterKey == key) {
-  |          return unescape(iterVal);
-  |        }
-  |      }
-  |    }
-  |    window.onload = function(e) {
-  |      var name = getCookie('irc_nick'),
-  |        area = getCookie('area');
-  |     if (name) {
-  |       document.getElementById('irc_nick').value = name;
-  |     }
-  |     if (area) {
-  |       document.getElementById('area').value = area;
-  |     }
-  |    }
-  |  </script>
