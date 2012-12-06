@@ -79,19 +79,19 @@ var irc = new irc.Client(server, nick,
        });
 
 // Connect IRC client and initize timers
-irc.connect(function() {
-  new cron(timers.earlyReminder, announceEarlyReminder, null, true);
-  new cron(timers.dueReminder, announceDueReminder, null, true);
-  new cron(timers.lateReminder, announceLateReminder, null, true);
-  new cron(timers.deadlineReminder, announceDeadlineReminder, null, true);
-});
+//irc.connect(function() {
+  //new cron(timers.earlyReminder, announceEarlyReminder, null, true);
+  //new cron(timers.dueReminder, announceDueReminder, null, true);
+  //new cron(timers.lateReminder, announceLateReminder, null, true);
+  //new cron(timers.deadlineReminder, announceDeadlineReminder, null, true);
+//});
 
 // Initiate the web framework
 var app = express();
 
 app.set('views', __dirname + '/templates');
 app.set('view engine', 'jade');
-app.use(express.static(__dirname + '/public'));
+app.use('/static', express.static(__dirname + '/public'));
 
 // Enable web framework to parse HTTP params
 app.use(express.bodyParser());
