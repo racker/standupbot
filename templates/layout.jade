@@ -9,11 +9,11 @@ html
           .control-group
             label.control-label(for='irc_nick') IRC Nick
             .controls
-              input#irc_nick(name='irc_nick', type='text')
+              input#irc_nick(name='irc_nick', type='text', value='#{cookies.irc_nick}')
           .control-group
             label.control-label(for='area') Functional Area
             .controls
-              input#area(name='area', type='text')
+              input#area(name='area', type='text', value='#{cookies.area}')
         fieldset
           legend Standup
           .control-group
