@@ -5,6 +5,7 @@
   npm install fs
   npm install async
   npm install cron
+  npm install jade
 */
 
 // Imports
@@ -14,6 +15,7 @@ var fs = require('fs');
 var yaml = require('js-yaml');
 var async = require('async');
 var cron = require('cron').CronJob;
+var jade = require('jade');
 
 // Load Configuration
 var configFile = "./conf/custom-config.yaml";
@@ -87,13 +89,19 @@ irc.connect(function() {
 // Initiate the web framework
 var app = express();
 
+app.set('views', __dirname + '/templates');
+app.set('view engine', 'jade');
+app.use(express.static(__dirname + '/public'));
+
 // Enable web framework to parse HTTP params
 app.use(express.bodyParser());
 // Enable cookie parsing on requests
 app.use(express.cookieParser());
 
 // Serve up the static webpages which include the form
-app.use('/', express['static']('./www'));
+app.get('/', function(req, res) {
+  res.render('layout.jade', {});
+});
 
 // Handle the API request
 app.post('/irc', function(req, res){

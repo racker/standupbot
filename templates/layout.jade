@@ -1,0 +1,28 @@
+html
+  include includes/head
+  body
+    form(name='standup', method='post', action='/irc')
+      fieldset
+        legend Your information
+        label(for='irc_nick') IRC Nick
+        input#irc_nick(name='irc_nick', type='text')
+        br
+        label(for='area') Functional Area
+        input#area(name='area', type='text')
+      fieldset
+        legend Standup
+        label(for='completed') What I Completed
+        br
+        textarea#completed(name='completed', rows='5', cols='80')
+        br
+        label(for='inprogress') What I'm Working on Today
+        br
+        textarea#inprogress(name='inprogress', rows='5',
+cols='80')
+        br
+        label(for='impediments') What Impediments I Have
+        br
+        textarea#impediments(name='impediments', rows='5',
+cols='80')
+        br
+      input(type='submit', value='Submit')
