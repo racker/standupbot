@@ -122,6 +122,19 @@ function remindChannels(message, callback) {
   });
 }
 
+function checkForMissingStandups(callback) {
+  var missing = [];
+  console.log("checking for missing standups");
+  fs.readdir(config.members_dir, function(err, contents) {
+    for (var i=0; i < members.length; i++) {
+      if (contents.indexOf(members[i]) == -1) {
+        missing.push(members[i]);
+      }
+    }
+    callback(null, missing);
+  });
+}
+
 
 function announceEarlyReminder() {
   checkForMissingStandups(function(err, missing) {
@@ -170,3 +183,5 @@ function clearMemberStandups(callback) {
   });
   callback();
 }
+
+exports.disconnect = function() {client ? client.disconnect() : console.log("no client");};
