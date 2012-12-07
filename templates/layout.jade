@@ -1,33 +1,9 @@
 |<!DOCTYPE html>
 html
-  include includes/head
+  head
+    include includes/head
+    block scripts
   body
+    include includes/navbar
     div.container
-      form(name='standup', method='post', action='/irc').form-horizontal
-        fieldset
-          legend Your Information
-          .control-group
-            label.control-label(for='irc_nick') IRC Nick
-            .controls
-              input#irc_nick(name='irc_nick', type='text', value='#{cookies.irc_nick}')
-          .control-group
-            label.control-label(for='area') Functional Area
-            .controls
-              input#area(name='area', type='text', value='#{cookies.area}')
-        fieldset
-          legend Standup
-          .control-group
-            label.control-label(for='completed') What I Completed
-            .controls
-              textarea#completed.input-xlarge(name='completed', rows='4')
-          .control-group
-            label.control-label(for='inprogress') What I'm Working on Today
-            .controls
-              textarea#inprogress.input-xlarge(name='inprogress', rows='4')
-          .control-group
-            label.control-label(for='impediments') What Impediments I Have
-            .controls
-              textarea#impediments.input-xlarge(name='impediments', rows='4', placeholder='n/a')
-          .control-group
-            .controls
-              button.btn(type='submit') Submit
+      block content
