@@ -17,7 +17,7 @@ var async = require('async');
 var jade = require('jade');
 var sqlite = require('sqlite3');
 var ircHandler = require('./ircHandler');
-var KEYS = ['completed', 'inprogress', 'impediments']; //TODO: rename me
+var STATES = ['completed', 'inprogress', 'impediments']; //TODO: rename me
 
 // Open db and make sure stats table exists
 var db = new sqlite.Database('stats.db');
@@ -90,7 +90,7 @@ app.get('/', function(req, res) {
     getStatusForID(req.cookies.lastID, function(err, result) {
       for (var i=0; i<result.length; i++) {
         var row = result[i],
-            key = KEYS[row.state];
+            key = STATES[row.state];
         locals[key].push(row.status);
       }
       render(locals);
@@ -109,8 +109,8 @@ app.get('/api/historical', function(req, res) {
       members: config.members
     };
 
-    for (var k in KEYS) {
-      locals.states[k] = KEYS[k];
+    for (var k in STATES) {
+      locals.states[k] = STATES[k];
     }
     var body = JSON.stringify(locals);
     res.set('Content-type', 'application/json');
@@ -133,8 +133,8 @@ app.post('/irc', function(req, res){
       area: req.body.area,
       nl: '\n' //there has to be a better solution...
   };
-  for (var k in KEYS) {
-    var key = KEYS[k];
+  for (var k in STATES) {
+    var key = STATES[k];
     locals[key] = req.body[key].split('\n');
   }
 
@@ -166,8 +166,8 @@ app.post('/irc', function(req, res){
 function saveStatusRows(lastID, locals, callback) {
   var now = new Date().getTime(),
       statements = [];
-  for (var k in KEYS) {
-    var key = KEYS[k];
+  for (var k in STATES) {
+    var key = STATES[k];
     for (var i=0; i<locals[key].length; i++) {
       if (locals[key][i].length) {
         statements.push(['INSERT INTO statuses VALUES (NULL, ?, ?, ?, ?, ?)',
