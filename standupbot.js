@@ -14,7 +14,6 @@ var express = require('express');
 var fs = require('fs');
 var yaml = require('js-yaml');
 var async = require('async');
-var cron = require('cron').CronJob;
 var jade = require('jade');
 var sqlite = require('sqlite3');
 var ircHandler = require('./ircHandler');
