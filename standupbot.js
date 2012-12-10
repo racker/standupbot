@@ -180,7 +180,7 @@ function saveStatusRows(lastID, locals, callback) {
       function(item, callback) {
         var stmt = db.prepare(item[0]);
         var args = item[1];
-        stmt.run(args[0], args[1], args[2], args[3], args[4]);
+        stmt.run.apply(stmt, args);
         stmt.finalize(callback);
       },
       function(err) {
