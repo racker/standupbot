@@ -6,6 +6,7 @@
   npm install async
   npm install cron
   npm install jade
+  npm install sqlite3
 */
 
 // Imports
