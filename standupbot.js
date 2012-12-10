@@ -17,7 +17,7 @@ var async = require('async');
 var jade = require('jade');
 var sqlite = require('sqlite3');
 var ircHandler = require('./ircHandler');
-var STATES = ['completed', 'inprogress', 'impediments']; //TODO: rename me
+var STATES = ['completed', 'inprogress', 'impediments'];
 
 // Open db and make sure stats table exists
 var db = new sqlite.Database('stats.db');
