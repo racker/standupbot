@@ -1,4 +1,5 @@
 var irc = require('irc');
+var cron = require('cron').CronJob;
 var fs = require('fs');
 var async = require('async');
 
@@ -41,11 +42,6 @@ function makeIrcClient() {
          stripColors: false
        });
 
-  /*
-   *
-   * UNCOMMENT ME AFTER TESTING
-   *
-   *
   // Connect IRC client and initize timers
   client.connect(function() {
     new cron(timers.earlyReminder, announceEarlyReminder, null, true);
@@ -53,12 +49,6 @@ function makeIrcClient() {
     new cron(timers.lateReminder, announceLateReminder, null, true);
     new cron(timers.deadlineReminder, announceDeadlineReminder, null, true);
   });
-
- * ALSO DELETE vvvvvvvvv
- */
-  client.say = function(channel, message) {
-    console.log('' + channel + ' ~ ' + message);
-  };
 
   // Add listener for error events so the bot doesn't crash when something goes wrong on the server
   client.addListener('error', function(message) {
