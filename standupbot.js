@@ -221,8 +221,10 @@ function getHistoricalData(callback) {
   var data = {foo: 'bar', states: {}};
 
   readAllRows('stats', function(err, rows) {
+    if (err) { console.log('Error reading database! ' + err); }
     data.stats = rows;
     readAllRows('statuses', function(err, rows) {
+      if (err) { console.log('Error reading database! ' + err); }
       data.statuses = rows;
       callback(null, data);
     });
@@ -235,17 +237,7 @@ function getStatusForID(id, callback) {
 
 function readAllRows(table, callback) {
   var rows = [];
-  db.each("SELECT * FROM " + table, function(err, row) {
-    if (err) {
-      console.log("Encountered an error reading from database!");
-      console.log(err);
-    } else {
-      rows.push(row);
-    }
-  }, function(err, rowCount) {
-    console.log('error reading from db! ' + err);
-    callback(err, rows);
-  });
+  db.all("SELECT * FROM " + table, callback);
 }
 
 process.on('SIGINT', function() {
