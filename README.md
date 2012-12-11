@@ -34,5 +34,5 @@ GOTO Common
 GOTO Common
 
 ## Common
-`$ npm install js-yaml fs express irc async cron`
+`$ npm install js-yaml fs express irc async cron jade sqlite3`
 
