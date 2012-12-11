@@ -191,9 +191,8 @@ function saveStatusRows(lastID, locals, callback) {
 
 // trim each line to 500 characters max
 function truncateResult(result) {
-  var outputStr = '',
-    htmlLines = result.split('\n'),
-    neededTruncate = false;
+  var htmlLines = result.split('\n'),
+      neededTruncate = false;
 
   for (var i=0; i < htmlLines.length; i++) {
     if (htmlLines[i].length >= 500) {
