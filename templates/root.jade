@@ -1,0 +1,42 @@
+extends layout
+block content
+  form(name='standup', method='post', action='/irc').form-horizontal
+    fieldset
+      legend Your Information
+      .control-group
+        label.control-label(for='irc_nick') IRC Nick
+        .controls
+          input#irc_nick(name='irc_nick', type='text', value='#{cookies.irc_nick || ''}')
+      .control-group
+        label.control-label(for='area') Functional Area
+        .controls
+          input#area(name='area', type='text', value='#{cookies.area || ''}')
+    fieldset
+      legend Standup
+      .control-group
+        label.control-label(for='completed') What I Completed
+        .controls
+          .well.pull-right.span5
+            ul
+              - for row in completed
+                li #{row}
+          textarea#completed.input-xlarge(name='completed', rows='4')
+      .control-group
+        label.control-label(for='inprogress') What I'm Working on Today
+        .controls
+          .well.pull-right.span5
+            ul
+              - for row in inprogress
+                li #{row}
+          textarea#inprogress.input-xlarge(name='inprogress', rows='4')
+      .control-group
+        label.control-label(for='impediments') What Impediments I Have
+        .controls
+          .well.pull-right.span5
+            ul
+              - for row in impediments
+                li #{row}
+          textarea#impediments.input-xlarge(name='impediments', rows='4', placeholder='n/a')
+      .control-group
+        .controls
+          button.btn(type='submit') Submit
