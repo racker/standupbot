@@ -44,10 +44,10 @@ function makeIrcClient(config) {
 
   // Connect IRC client and initize timers
   client.connect(function() {
-    new cron(timers.earlyReminder, announceEarlyReminder(config), null, true);
-    new cron(timers.dueReminder, announceDueReminder(config), null, true);
-    new cron(timers.lateReminder, announceLateReminder(config), null, true);
-    new cron(timers.deadlineReminder, announceDeadlineReminder(config), null, true);
+    new cron(timers.earlyReminder, announceEarlyReminder.bind(null, config), null, true);
+    new cron(timers.dueReminder, announceDueReminder.bind(null, config), null, true);
+    new cron(timers.lateReminder, announceLateReminder.bind(null, config), null, true);
+    new cron(timers.deadlineReminder, announceDeadlineReminder.bind(null, config), null, true);
   });
 
   // Add listener for error events so the bot doesn't crash when something goes wrong on the server
