@@ -1,0 +1,20 @@
+{
+  "name": "standupbot",
+  "description": "A bot and small website used for standups",
+  "author": "Ele Dev <ele-dev@lists.rackspace.com>",
+  "version" : "0.0.1",
+  "private" : "true",
+  "dependencies": {
+    "js-yaml": "2.0.x",
+    "express": "3.2.x",
+    "irc": "0.3.x",
+    "async": "0.2.x",
+    "cron": "1.0.x",
+    "jade": "0.31.x",
+    "sqlite3": "2.1.x"
+  },
+  "devDependencies": {
+    "mocha": "1.10.x"
+  },
+  "engine": "node >= 0.8.14"
+}
