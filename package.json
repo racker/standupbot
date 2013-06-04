@@ -16,5 +16,8 @@
   "devDependencies": {
     "mocha": "1.10.x"
   },
+  "scripts": {
+    "test": "mocha"
+  },
   "engine": "node >= 0.8.14"
 }
