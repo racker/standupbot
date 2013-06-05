@@ -20,10 +20,10 @@ var nick,
 exports.init = function(config) {
   // Load Configuration Variables
   loadConfigVariables(config);
-  client = makeIrcClient();
+  client = makeIrcClient(config);
 }
 
-function makeIrcClient() {
+function makeIrcClient(config) {
   var client = new irc.Client(server, nick,
        {
          userName: user_name,
@@ -44,10 +44,10 @@ function makeIrcClient() {
 
   // Connect IRC client and initize timers
   client.connect(function() {
-    new cron(timers.earlyReminder, announceEarlyReminder, null, true);
-    new cron(timers.dueReminder, announceDueReminder, null, true);
-    new cron(timers.lateReminder, announceLateReminder, null, true);
-    new cron(timers.deadlineReminder, announceDeadlineReminder, null, true);
+    new cron(timers.earlyReminder, announceEarlyReminder.bind(null, config), null, true);
+    new cron(timers.dueReminder, announceDueReminder.bind(null, config), null, true);
+    new cron(timers.lateReminder, announceLateReminder.bind(null, config), null, true);
+    new cron(timers.deadlineReminder, announceDeadlineReminder.bind(null, config), null, true);
   });
 
   // Add listener for error events so the bot doesn't crash when something goes wrong on the server
@@ -112,13 +112,13 @@ function remindChannels(message, callback) {
   });
 }
 
-function checkForMissingStandups(callback) {
+exports.checkForMissingStandups = function checkForMissingStandups(config, callback) {
   var missing = [];
   console.log("checking for missing standups");
   fs.readdir(config.members_dir, function(err, contents) {
-    for (var i=0; i < members.length; i++) {
-      if (contents.indexOf(members[i]) == -1) {
-        missing.push(members[i]);
+    for (var i=0; i < config.members.length; i++) {
+      if (contents.indexOf(config.members[i]) == -1) {
+        missing.push(config.members[i]);
       }
     }
     callback(null, missing);
@@ -126,8 +126,8 @@ function checkForMissingStandups(callback) {
 }
 
 
-function announceEarlyReminder() {
-  checkForMissingStandups(function(err, missing) {
+function announceEarlyReminder(config) {
+  checkForMissingStandups(config, function(err, missing) {
     var msg = 'Standups are due soon. (' + missing.join(', ') + ')';
     remindChannels(msg, function() {
       console.log('Reminded channel that standups are due soon.');
@@ -135,8 +135,8 @@ function announceEarlyReminder() {
   });
 }
 
-function announceDueReminder() {
-  checkForMissingStandups(function(err, missing) {
+function announceDueReminder(config) {
+  checkForMissingStandups(config, function(err, missing) {
     var msg = 'Standups are due! (' + missing.join(', ') + ')';
     remindChannels(msg, function() {
       console.log('Reminded channel that standups are due now.');
@@ -144,8 +144,8 @@ function announceDueReminder() {
   });
 }
 
-function announceLateReminder() {
-  checkForMissingStandups(function(err, missing) {
+function announceLateReminder(config) {
+  checkForMissingStandups(config, function(err, missing) {
     var msg = 'Standups are late! (' + missing.join(', ') + ')';
     remindChannels(msg, function() {
       console.log('Reminded channels that standups are late.');
@@ -153,8 +153,8 @@ function announceLateReminder() {
   });
 }
 
-function announceDeadlineReminder() {
-  checkForMissingStandups(function(err, missing) {
+function announceDeadlineReminder(config) {
+  checkForMissingStandups(config, function(err, missing) {
     var msg = 'The deadline for standups is now. You lose the game! (' + missing.join(', ') + ')';
     remindChannels(msg, function() {
       console.log('Reminded channels that the deadline for standups has passed.');
