@@ -112,7 +112,7 @@ function remindChannels(message, callback) {
   });
 }
 
-exports.checkForMissingStandups = function checkForMissingStandups(config, callback) {
+function checkForMissingStandups(config, callback) {
   var missing = [];
   console.log("checking for missing standups");
   fs.readdir(config.members_dir, function(err, contents) {
@@ -124,6 +124,8 @@ exports.checkForMissingStandups = function checkForMissingStandups(config, callb
     callback(null, missing);
   });
 }
+
+exports.checkForMissingStandups = checkForMissingStandups;
 
 
 function announceEarlyReminder(config) {
