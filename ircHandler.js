@@ -103,7 +103,7 @@ exports.publishToChannels = function(message, callback) {
 
 function remindChannels(message, callback) {
   var remind = function remind(channel, callback) {
-    client.notice(channel, message);
+    client.say(channel, message);
     callback();
   };
 
