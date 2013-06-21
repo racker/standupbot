@@ -1,0 +1,26 @@
+config:
+  irc:
+    nick: example
+    user_name: example
+    real_name: 'example'
+    server: irc.example.com
+    port: 7000
+    ssl: true
+    channels:
+      definitions:
+      - { name: '#example' }
+      publish:
+      - '#example'
+      remind:
+      - '#example'
+  members_dir: 'members'
+  members:
+    - member1
+    - member2
+  domain: 'example.com'
+  timers: {
+    earlyReminder: '0 45 17 * * 1-5',
+    dueReminder: '0 0 19 * * 1-5',
+    lateReminder: '0 30 21 * * 1-5',
+    deadlineReminder: '0 0 1 * * 2-6'
+  }
