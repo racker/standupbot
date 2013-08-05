@@ -7,6 +7,7 @@
   npm install cron
   npm install jade
   npm install sqlite3
+  npm install sprintf
 */
 
 // Imports
@@ -16,6 +17,7 @@ var yaml = require('js-yaml');
 var async = require('async');
 var jade = require('jade');
 var sqlite = require('sqlite3');
+var sprintf = require('sprintf-js').sprintf;
 var ircHandler = require('./ircHandler');
 var STATES = ['completed', 'inprogress', 'impediments'];
 
@@ -100,8 +102,40 @@ app.get('/', function(req, res) {
   }
 });
 
+//Serve up form for getting individual user data
+app.get('/user', function(req, res) {
+  res.render('user.jade', {});
+});
+
+app.post('/api/user', function(req, res) {
+    var member = req.body.irc_nick || '';
+    getHistoricalData(member, function(err, results) {
+      var locals = {
+        statsID: results.stats,
+        statuses: results.statuses,
+        states: {},
+     };
+      for (var k in STATES) {
+        locals.states[k] = STATES[k];
+      }
+      var body = JSON.stringify(locals);
+      res.set('Content-type', 'application/json');
+      res.set('Content-length', body.length);
+      res.write(body);
+      res.end();
+    });
+});
+
+app.get('/api/user', function(req, res) {
+    members = JSON.stringify(config.members);
+    res.set('Content-type', 'application/json');
+    res.set('Content-length', members.length);
+    res.write(members);
+    res.end();
+});
+
 app.get('/api/historical', function(req, res) {
-  getHistoricalData(function(err, results) {
+  getHistoricalData(null, function(err, results) {
     var locals = {
       statsID: results.stats,
       statuses: results.statuses,
@@ -216,18 +250,30 @@ function saveStatsRow(name, finished, inProgress, impediments, callback) {
         });
 }
 
-function getHistoricalData(callback) {
-  var data = {foo: 'bar', states: {}};
-
-  readAllRows('stats', function(err, rows) {
-    if (err) { console.log('Error reading database! ' + err); }
-    data.stats = rows;
-    readAllRows('statuses', function(err, rows) {
+function getHistoricalData(user, callback) {
+  var data = {};
+  
+  if (user) {
+    readUserRows('stats', user, function(err, rows) {
       if (err) { console.log('Error reading database! ' + err); }
-      data.statuses = rows;
-      callback(null, data);
+      data.stats = rows;
+      readUserRows('statuses', user, function(err, rows) {
+        if (err) { console.log('Error reading database! ' + err); }
+        data.statuses = rows;
+        callback(null, data);
+      });
     });
-  });
+  } else {
+    readAllRows('stats', function(err, rows) {
+      if (err) { console.log('Error reading database! ' + err); }
+      data.stats = rows;
+      readAllRows('statuses', function(err, rows) {
+        if (err) { console.log('Error reading database! ' + err); }
+        data.statuses = rows;
+        callback(null, data);
+      });
+    });
+  }
 }
 
 function getStatusForID(id, callback) {
@@ -237,6 +283,11 @@ function getStatusForID(id, callback) {
 function readAllRows(table, callback) {
   var rows = [];
   db.all("SELECT * FROM " + table, callback);
+}
+
+function readUserRows(table, user, callback) {
+  var rows = [];
+  db.all(sprintf("SELECT * FROM %s WHERE name='%s'", table, user), callback);
 }
 
 process.on('SIGINT', function() {
