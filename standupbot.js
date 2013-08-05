@@ -254,20 +254,20 @@ function getHistoricalData(user, callback) {
   var data = {};
   
   if (user) {
-    readUserRows('stats', user, function(err, rows) {
+    readAllRows('stats', user, function(err, rows) {
       if (err) { console.log('Error reading database! ' + err); }
       data.stats = rows;
-      readUserRows('statuses', user, function(err, rows) {
+      readAllRows('statuses', user, function(err, rows) {
         if (err) { console.log('Error reading database! ' + err); }
         data.statuses = rows;
         callback(null, data);
       });
     });
   } else {
-    readAllRows('stats', function(err, rows) {
+    readAllRows('stats', null, function(err, rows) {
       if (err) { console.log('Error reading database! ' + err); }
       data.stats = rows;
-      readAllRows('statuses', function(err, rows) {
+      readAllRows('statuses', null, function(err, rows) {
         if (err) { console.log('Error reading database! ' + err); }
         data.statuses = rows;
         callback(null, data);
@@ -280,14 +280,13 @@ function getStatusForID(id, callback) {
   db.all('select * from statuses where stats = ?', [id], callback);
 };
 
-function readAllRows(table, callback) {
+function readAllRows(table, user, callback) {
   var rows = [];
-  db.all("SELECT * FROM " + table, callback);
-}
-
-function readUserRows(table, user, callback) {
-  var rows = [];
-  db.all(sprintf("SELECT * FROM %s WHERE name='%s'", table, user), callback);
+  var query = sprintf("SELECT * FROM %s", table);
+  if (user) {
+    query += sprintf(" WHERE name='%s'", user);
+  }
+  db.all(query, callback);
 }
 
 process.on('SIGINT', function() {
