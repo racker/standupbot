@@ -5,6 +5,7 @@ config:
     real_name: 'example'
     server: irc.example.com
     port: 7000
+    floodProtectionDelay: 1000
     ssl: true
     channels:
       definitions:
