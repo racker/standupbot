@@ -15,6 +15,7 @@ var nick,
   members,
   members_dir,
   timers,
+  floodProtectionDelay,
   client;
 
 exports.init = function(config) {
@@ -38,7 +39,7 @@ function makeIrcClient(config) {
          selfSigned: true,
          certExpired: true,
          floodProtection: true,
-         floodProtectionDelay: 250,
+         floodProtectionDelay: floodProtectionDelay,
          stripColors: false
        });
 
