@@ -1,0 +1,12 @@
+extends layout
+block content
+  form(name='historical_user_data', method='post', action='/api/user').form-horizontal
+    fieldset
+      legend User Information
+      .control-group
+        label.control-label(for='irc_nick') IRC Nick
+        .controls
+          input#irc_nick(name='irc_nick', type='text')
+      .control-group
+        .controls
+          button.btn(type='submit') Submit
