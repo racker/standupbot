@@ -17,7 +17,8 @@
     "mocha": "1.10.x"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node standupbot.js"
   },
   "engine": "node >= 0.8.14"
 }
