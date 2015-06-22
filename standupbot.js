@@ -138,6 +138,12 @@ app.post('/irc', function(req, res){
     locals[key] = req.body[key].split('\n');
   }
 
+  if (!locals.irc_nick) {
+    res.status(400);
+    res.send('Error: IRC nick not provided.');
+    return;
+  }
+
   res.cookie('irc_nick', req.body.irc_nick, { domain: config.domain });
   res.cookie('area', req.body.area, { domain: config.domain });
 
