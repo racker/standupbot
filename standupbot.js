@@ -44,7 +44,19 @@ db.serialize(function() {
     });
   }
 
-  createStats(createStatuses);
+  function createTeamInfo(callback) {
+    db.run("CREATE TABLE team (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, team TEXT NOT NULL, report_count INTEGER NOT NULL)", function(err) {
+      if (err) {
+        console.log('team table already exists');
+      }
+      if (callback) {
+        callback();
+      }
+    });
+  }
+
+  createStats(createStatuses());
+  createTeamInfo();
 });
 
 // Load Configuration
@@ -120,6 +132,28 @@ app.get('/api/historical', function(req, res) {
   });
 });
 
+//param name is 'teamname'
+app.get('/api/group_stats?', function(req, res) {
+  //res.write(req.query.teamname);
+  getTeamStats(req.query.teamname, function(results) {
+    console.dir("*********");
+    console.dir(results);
+    var body = JSON.stringify(results);
+    //res.set('Content-type', 'application/json');
+    res.set('Content-length', body.length);
+    console.dir(body);
+    res.write(body);
+    res.end();
+  });
+  //res.end();
+});
+
+//param name is 'pname'
+app.get('/api/personal_stats?', function(req, res) {
+  res.write(req.params.pname);
+  res.end();
+});
+
 // Handle the API request
 app.post('/irc', function(req, res){
   // build the output
@@ -147,6 +181,9 @@ app.post('/irc', function(req, res){
   res.cookie('irc_nick', req.body.irc_nick, { domain: config.domain });
   res.cookie('area', req.body.area, { domain: config.domain });
 
+  saveTeamsRow(req.body.irc_nick, req.body.area, function(err) {
+    console.dir(err);
+  });
   res.render('partials/ircOutput', locals, function(err, result) {
     if (err) {
       console.log('Error processing input! ' + err);
@@ -220,6 +257,58 @@ function saveStatsRow(name, finished, inProgress, impediments, callback) {
          function(err) {
            callback(err, this.lastID);
         });
+}
+
+function saveTeamsRow(name, area, callback) {
+  var count;
+  db.all("SELECT report_count FROM team WHERE name = ?", [name], function(err, rows) {
+    if (!err) {
+      console.dir(rows);
+      if (rows.length != 0) {
+        count = rows[0].report_count;
+        count++;
+        db.run("UPDATE team SET report_count = ? WHERE name = ?", [ count, name ], callback);
+      } else {
+        db.run("INSERT INTO team VALUES (NULL, ?, ?, ?)", [name, area, 1], callback(err));
+      }
+    } else {
+      console.dir(err);
+      callback(err);
+    //  db.run("INSERT INTO team VALUES (NULL, ?, ?, ?)", [name, area, 1], callback(err));
+    }
+  });
+}
+
+function getTeamStats(teamname, callback) {
+  var results = [];
+
+  db.all("SELECT * FROM team WHERE team = ?", [teamname], function(err, rows) {
+    if (!err) {
+      console.dir(rows);
+      if (rows.length != 0) {
+        async.forEach(rows, function(it, callback) {
+          db.all("SELECT * FROM statuses WHERE name = ?", [it.name], function(err, res) {
+            if (!err) {
+              if (res.length != 0) {
+                // var item = {};
+                // item.name = res.name;
+                // item.completed = res.
+                results = res;
+                //console.dir(res);
+              }
+              console.dir(res);
+              callback(res);
+            } else {
+              callback(err);
+            }
+          })
+        }, function(err){callback(err)});
+      }
+    } else {
+      callback(err);
+    }
+  });
+  //callback(results);
 }
 
 function getHistoricalData(callback) {
